@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bean Focus</title>
+  <meta name="description" content="A cute pixel space-bean pomodoro timer: 25 minutes focus, 5 minutes break.">
+  <meta name="theme-color" content="#1e123c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Bean Focus">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="icons/favicon.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="purple">
+  <canvas id="stars" aria-hidden="true"></canvas>
+
+  <main class="app">
+    <header class="top">
+      <h1>Bean Focus</h1>
+      <button id="themeBtn" class="icon-btn" aria-label="Change theme" title="Themes">🎨</button>
+    </header>
+
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-mode="focus" role="tab">Focus</button>
+      <button class="tab" data-mode="break" role="tab">Break</button>
+    </div>
+
+    <section class="timer-card">
+      <div class="ring-wrap">
+        <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="ring-bg" cx="60" cy="60" r="54"></circle>
+          <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="54"></circle>
+        </svg>
+        <div class="ring-inner">
+          <div id="bean" class="bean" aria-hidden="true"></div>
+          <div id="time" class="time" aria-live="off">25:00</div>
+          <div id="label" class="label">time to focus ✨</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="resetBtn" class="ghost-btn" aria-label="Reset">↺</button>
+        <button id="startBtn" class="main-btn">START</button>
+        <button id="skipBtn" class="ghost-btn" aria-label="Skip">⏭</button>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat"><span id="todayCount">0</span><small>focus sessions today</small></div>
+      <div class="dots" id="dots" aria-hidden="true"></div>
+    </section>
+
+    <p id="tip" class="tip">You've got this, girlypop 💜</p>
+  </main>
+
+  <!-- Celebration popup -->
+  <div id="celebrate" class="overlay" hidden>
+    <div class="modal pop">
+      <div class="confetti" id="confetti" aria-hidden="true"></div>
+      <div id="celebrateBean" class="bean big dance" aria-hidden="true"></div>
+      <h2 id="celebrateTitle">LET'S GO GIRLYPOP!</h2>
+      <p id="celebrateMsg">You crushed that focus session!</p>
+      <p id="celebrateCare" class="care">💧 Drink some water, bestie!</p>
+      <button id="celebrateBtn" class="main-btn">START BREAK</button>
+    </div>
+  </div>
+
+  <!-- Break over popup -->
+  <div id="breakOver" class="overlay" hidden>
+    <div class="modal pop">
+      <div class="bean big" id="breakBean" aria-hidden="true"></div>
+      <h2>Break's over, cutie!</h2>
+      <p id="breakMsg">Ready for another round? You're doing amazing.</p>
+      <button id="breakOverBtn" class="main-btn">LET'S FOCUS</button>
+    </div>
+  </div>
+
+  <!-- Theme picker -->
+  <div id="themes" class="overlay" hidden>
+    <div class="modal">
+      <h2>Pick your color</h2>
+      <div class="theme-grid" id="themeGrid"></div>
+      <label class="toggle"><input type="checkbox" id="soundToggle" checked> Sound</label>
+      <label class="toggle"><input type="checkbox" id="vibeToggle" checked> Vibrate</label>
+      <label class="toggle"><input type="checkbox" id="autoToggle"> Auto-start next timer</label>
+      <button id="themesClose" class="main-btn">DONE</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

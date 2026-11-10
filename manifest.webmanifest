@@ -1,0 +1,16 @@
+{
+  "name": "Bean Focus Pomodoro",
+  "short_name": "Bean Focus",
+  "description": "A cute pixel space-bean pomodoro timer: 25 minutes focus, 5 minutes break.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1e123c",
+  "theme_color": "#1e123c",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
