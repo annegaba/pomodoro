@@ -23,12 +23,12 @@
   <main class="app">
     <header class="top">
       <h1>Bean Focus</h1>
-      <button id="themeBtn" class="icon-btn" aria-label="Change theme" title="Themes">🎨</button>
+      <button id="themeBtn" class="icon-btn" aria-label="Themes and settings" title="Themes and settings">🎨</button>
     </header>
 
     <div class="tabs" role="tablist">
       <button class="tab active" data-mode="focus" role="tab">Focus</button>
-      <button class="tab" data-mode="break" role="tab">Break</button>
+      <button class="tab" data-mode="break" role="tab" id="breakTab">Break</button>
     </div>
 
     <section class="timer-card">
@@ -54,6 +54,7 @@
     <section class="stats">
       <div class="stat"><span id="todayCount">0</span><small>focus sessions today</small></div>
       <div class="dots" id="dots" aria-hidden="true"></div>
+      <p class="progress" id="progress"></p>
     </section>
 
     <p id="tip" class="tip">You've got this, girlypop 💜</p>
@@ -118,9 +119,17 @@
 
   <!-- Theme picker -->
   <div id="themes" class="overlay" hidden>
-    <div class="modal">
-      <h2>Pick your color</h2>
+    <div class="modal settings-card" role="dialog" aria-modal="true" aria-labelledby="themesHeading">
+      <h2 id="themesHeading">Pick your color</h2>
       <div class="theme-grid" id="themeGrid"></div>
+      <h2>Timer lengths</h2>
+      <div class="presets" id="presets"></div>
+      <div class="lengths">
+        <label>Focus<input type="number" id="focusMins" min="1" max="90" inputmode="numeric"><small>min</small></label>
+        <label>Break<input type="number" id="breakMins" min="1" max="30" inputmode="numeric"><small>min</small></label>
+        <label>Long break<input type="number" id="longMins" min="1" max="60" inputmode="numeric"><small>min</small></label>
+      </div>
+      <p class="hint">Long break after every 4 focus sessions 🌙</p>
       <label class="toggle"><input type="checkbox" id="soundToggle" checked> Sound</label>
       <label class="toggle"><input type="checkbox" id="vibeToggle" checked> Vibrate</label>
       <label class="toggle"><input type="checkbox" id="autoToggle"> Auto-start next timer</label>

@@ -2,8 +2,18 @@
   "use strict";
 
   // ---------- Config ----------
-  var DURATIONS = { focus: 25 * 60, break: 5 * 60 };
+  // Lengths are in minutes; DURATIONS (seconds) is rebuilt whenever they change.
+  var DEFAULT_MINS = { focus: 25, break: 5, long: 15 };
+  var LIMITS = { focus: [1, 90], break: [1, 30], long: [1, 60] };
+  var PRESETS = [
+    { name: "Classic", focus: 25, break: 5, long: 15 },
+    { name: "Quick", focus: 15, break: 3, long: 10 },
+    { name: "Deep", focus: 50, break: 10, long: 20 }
+  ];
+  var LONG_EVERY = 4; // focus sessions before a long break
+  var DURATIONS = {};
   var RING_LEN = 2 * Math.PI * 54;
+  var LOCK_HINT = "Leave me open with the screen on so I can cheer when you finish 💜";
 
   var THEMES = {
     purple: { name: "Purple", body: "#8b5cf6", shade: "#5b34b3" },
@@ -27,7 +37,7 @@
   ];
 
   var HYPE_MSGS = [
-    "25 whole minutes of focus. You're literally unstoppable 💜",
+    "{min} whole minutes of focus. You're literally unstoppable 💜",
     "Your brain is glowing right now, bestie ✨",
     "That test tomorrow? You're SO ready for it.",
     "Mom is so proud of you. Like, so proud. 💜",
@@ -57,7 +67,20 @@
     "One page at a time, cutie 📚",
     "Future you is cheering for you right now!",
     "Tiny steps still get you to the finish line 💖",
-    "You're smarter than you think, bestie 🌟"
+    "You're smarter than you think, bestie 🌟",
+    LOCK_HINT
+  ];
+
+  var LONG_TITLES = [
+    LONG_EVERY + " IN A ROW?! ICONIC!",
+    "COMBO QUEEN!",
+    "SHE'S ON A ROLL!"
+  ];
+
+  var LONG_MSGS = [
+    "That's " + LONG_EVERY + " focus sessions! You earned a long break, superstar 🌙",
+    "Full round complete! Go rest, you absolutely ate 💅",
+    "Big study energy. Time for a proper break, bestie ✨"
   ];
 
   var BREAK_TIPS = [
@@ -65,6 +88,12 @@
     "Rest those eyes, superstar ✨",
     "Stretch it out, girlie 🧘‍♀️",
     "Snack break? Snack break. 🍓"
+  ];
+
+  var LONG_TIPS = [
+    "Long break! Go do something fun 🌙",
+    "Walk, snack, stretch. You earned it 💖",
+    "Rest that big brain, queen 👑"
   ];
 
   var BREAK_OVER = [
@@ -119,10 +148,31 @@
     try { localStorage.setItem("beanfocus:" + key, JSON.stringify(value)); } catch (e) { /* ignore */ }
   }
 
-  function todayKey() {
+  function dayKey(offset) {
     var d = new Date();
+    if (offset) d.setDate(d.getDate() + offset);
     return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
   }
+  function todayKey() { return dayKey(0); }
+
+  function clampMins(kind, v) {
+    v = Math.round(Number(v));
+    if (!isFinite(v)) return DEFAULT_MINS[kind];
+    return Math.min(LIMITS[kind][1], Math.max(LIMITS[kind][0], v));
+  }
+
+  var mins = load("durations", DEFAULT_MINS);
+  function setDurations(m) {
+    mins = {
+      focus: clampMins("focus", m && m.focus),
+      break: clampMins("break", m && m.break),
+      long: clampMins("long", m && m.long)
+    };
+    DURATIONS.focus = mins.focus * 60;
+    DURATIONS.break = mins.break * 60;
+    DURATIONS.long = mins.long * 60;
+  }
+  setDurations(mins);
 
   function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
 
@@ -136,13 +186,16 @@
     celebrateCare: $("celebrateCare"), celebrateBtn: $("celebrateBtn"), celebrateBean: $("celebrateBean"),
     confetti: $("confetti"), breakOver: $("breakOver"), breakMsg: $("breakMsg"), breakOverBtn: $("breakOverBtn"),
     breakBean: $("breakBean"), themes: $("themes"), themeBtn: $("themeBtn"), themeGrid: $("themeGrid"),
-    themesClose: $("themesClose"), soundToggle: $("soundToggle"), vibeToggle: $("vibeToggle"), autoToggle: $("autoToggle")
+    themesClose: $("themesClose"), soundToggle: $("soundToggle"), vibeToggle: $("vibeToggle"), autoToggle: $("autoToggle"),
+    breakTab: $("breakTab"), progress: $("progress"), presets: $("presets"),
+    focusMins: $("focusMins"), breakMins: $("breakMins"), longMins: $("longMins")
   };
 
   // ---------- State ----------
   var state = {
     mode: "focus",
     remaining: DURATIONS.focus,
+    total: DURATIONS.focus, // length of the current timer, so the ring stays right if settings change mid-timer
     endAt: null,
     theme: load("theme", "purple"),
     sound: load("sound", true),
@@ -150,20 +203,53 @@
     auto: load("auto", false)
   };
   var stats = load("stats", { day: todayKey(), count: 0 });
-  if (stats.day !== todayKey()) stats = { day: todayKey(), count: 0 };
+  if (!stats || stats.day !== todayKey()) stats = { day: todayKey(), count: 0 };
+
+  // Focus sessions finished since the last long break.
+  var cycle = load("cycle", 0);
+  if (typeof cycle !== "number" || cycle < 0 || cycle >= LONG_EVERY) cycle = 0;
+
+  // Days in a row with at least one finished focus session.
+  var streak = load("streak", { last: null, n: 0 });
+  if (!streak || typeof streak.n !== "number") streak = { last: null, n: 0 };
 
   var saved = load("timer", null);
   if (saved && saved.mode && DURATIONS[saved.mode]) {
     state.mode = saved.mode;
     state.endAt = saved.endAt || null;
-    state.remaining = typeof saved.remaining === "number" ? saved.remaining : DURATIONS[saved.mode];
+    state.total = typeof saved.total === "number" && saved.total > 0 ? saved.total : DURATIONS[saved.mode];
+    state.remaining = typeof saved.remaining === "number" ? Math.min(saved.remaining, state.total) : state.total;
   }
 
   var ticker = null;
   var wakeLock = null;
+  var lockHintShown = false;
 
   function persistTimer() {
-    save("timer", { mode: state.mode, endAt: state.endAt, remaining: state.remaining });
+    save("timer", { mode: state.mode, endAt: state.endAt, remaining: state.remaining, total: state.total });
+  }
+
+  function streakAlive() {
+    return streak.last === todayKey() || streak.last === dayKey(-1);
+  }
+
+  // Returns true when this session made the streak grow (first session of a new day).
+  function bumpStreak() {
+    var today = todayKey();
+    if (streak.last === today) return false;
+    streak.n = streak.last === dayKey(-1) ? streak.n + 1 : 1;
+    streak.last = today;
+    save("streak", streak);
+    return true;
+  }
+
+  // Resets today's count when the app stays open past midnight.
+  function checkDay() {
+    if (stats.day !== todayKey()) {
+      stats = { day: todayKey(), count: 0 };
+      save("stats", stats);
+      renderStats();
+    }
   }
 
   // ---------- Rendering ----------
@@ -180,27 +266,38 @@
 
   function renderTime() {
     var rem = currentRemaining();
-    var total = DURATIONS[state.mode];
     el.time.textContent = fmt(rem);
-    el.ringFg.style.strokeDashoffset = String(RING_LEN * (1 - rem / total));
-    var emoji = state.mode === "focus" ? "📚" : "☕";
+    el.ringFg.style.strokeDashoffset = String(RING_LEN * (1 - rem / state.total));
+    var emoji = state.mode === "focus" ? "📚" : state.mode === "long" ? "🌙" : "☕";
     document.title = state.endAt ? fmt(rem) + " " + emoji + " Bean Focus" : "Bean Focus";
   }
 
   function renderMode() {
-    document.body.setAttribute("data-mode", state.mode);
-    el.tabs.forEach(function (t) { t.classList.toggle("active", t.getAttribute("data-mode") === state.mode); });
-    el.label.textContent = state.mode === "focus" ? "time to focus ✨" : "break time 💧";
-    el.tip.textContent = state.mode === "focus" ? pick(FOCUS_TIPS) : pick(BREAK_TIPS);
+    // "long" is a kind of break, so it lights up the Break tab.
+    document.body.setAttribute("data-mode", state.mode === "focus" ? "focus" : "break");
+    var tabMode = state.mode === "focus" ? "focus" : "break";
+    el.tabs.forEach(function (t) { t.classList.toggle("active", t.getAttribute("data-mode") === tabMode); });
+    el.breakTab.textContent = state.mode === "long" ? "Long Break" : "Break";
+    el.label.textContent = state.mode === "focus" ? "time to focus ✨" : state.mode === "long" ? "long break 🌙" : "break time 💧";
+    el.tip.textContent = pick(state.mode === "focus" ? FOCUS_TIPS : state.mode === "long" ? LONG_TIPS : BREAK_TIPS);
   }
 
   function renderRunning() {
     var running = !!state.endAt;
     document.body.classList.toggle("running", running);
-    el.startBtn.textContent = running ? "PAUSE" : (currentRemaining() < DURATIONS[state.mode] ? "RESUME" : "START");
+    el.startBtn.textContent = running ? "PAUSE" : (currentRemaining() < state.total ? "RESUME" : "START");
+  }
+
+  function renderProgress() {
+    var left = LONG_EVERY - cycle;
+    var parts = [];
+    if (streakAlive() && streak.n >= 2) parts.push("🔥 " + streak.n + "-day streak");
+    parts.push(left + " more until a long break 🌙");
+    el.progress.textContent = parts.join(" · ");
   }
 
   function renderStats() {
+    renderProgress();
     el.todayCount.textContent = String(stats.count);
     var html = "";
     var shown = Math.min(stats.count, 12);
@@ -237,12 +334,17 @@
   function start() {
     unlockAudio();
     askNotifyPermission();
-    if (currentRemaining() <= 0) state.remaining = DURATIONS[state.mode];
+    if (currentRemaining() <= 0) state.remaining = state.total;
     state.endAt = Date.now() + state.remaining * 1000;
     persistTimer();
     startTicker();
     requestWakeLock();
     renderRunning();
+    // Phones pause web apps when locked, so remind her once to keep the app open.
+    if (state.mode === "focus" && !lockHintShown) {
+      lockHintShown = true;
+      el.tip.textContent = LOCK_HINT;
+    }
   }
 
   function pause() {
@@ -257,7 +359,8 @@
 
   function reset() {
     state.endAt = null;
-    state.remaining = DURATIONS[state.mode];
+    state.total = DURATIONS[state.mode];
+    state.remaining = state.total;
     persistTimer();
     stopTicker();
     releaseWakeLock();
@@ -268,7 +371,8 @@
   function setMode(mode) {
     state.mode = mode;
     state.endAt = null;
-    state.remaining = DURATIONS[mode];
+    state.total = DURATIONS[mode];
+    state.remaining = state.total;
     persistTimer();
     stopTicker();
     releaseWakeLock();
@@ -285,23 +389,30 @@
   function stopTicker() { if (ticker) { clearInterval(ticker); ticker = null; } }
 
   function tick() {
+    checkDay();
     renderTime();
     if (state.endAt && currentRemaining() <= 0) complete();
   }
 
   function complete() {
     var finished = state.mode;
+    var focusMins = Math.round(state.total / 60);
     stopTicker();
     releaseWakeLock();
     state.endAt = null;
 
     if (finished === "focus") {
-      if (stats.day !== todayKey()) stats = { day: todayKey(), count: 0 };
+      checkDay();
       stats.count++;
       save("stats", stats);
+      cycle++;
+      var isLong = cycle >= LONG_EVERY;
+      if (isLong) cycle = 0;
+      save("cycle", cycle);
+      var streakUp = bumpStreak();
       renderStats();
-      setMode("break");
-      celebrateFocus();
+      setMode(isLong ? "long" : "break");
+      celebrateFocus(isLong, streakUp, focusMins);
     } else {
       setMode("focus");
       showBreakOver();
@@ -309,13 +420,15 @@
   }
 
   // ---------- Celebrations ----------
-  function celebrateFocus() {
-    var title = pick(HYPE_TITLES);
-    var msg = pick(HYPE_MSGS);
+  function celebrateFocus(isLong, streakUp, focusMins) {
+    var title = pick(isLong ? LONG_TITLES : HYPE_TITLES);
+    var msg = pick(isLong ? LONG_MSGS : HYPE_MSGS).replace("{min}", focusMins);
+    if (streakUp && streak.n >= 2) msg = "🔥 " + streak.n + " days in a row! " + msg;
     var care = pick(SELF_CARE);
     el.celebrateTitle.textContent = title;
     el.celebrateMsg.textContent = msg;
     el.celebrateCare.textContent = care;
+    el.celebrateBtn.textContent = isLong ? "START LONG BREAK" : "START BREAK";
     el.celebrate.hidden = false;
     burstConfetti();
     chime("win");
@@ -423,6 +536,7 @@
   }
 
   document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) checkDay();
     if (!document.hidden && state.endAt) {
       requestWakeLock();
       tick();
@@ -470,6 +584,7 @@
   el.tabs.forEach(function (t) {
     t.addEventListener("click", function () {
       var m = t.getAttribute("data-mode");
+      if (m === "break" && state.mode === "long") return;
       if (m !== state.mode) setMode(m);
     });
   });
@@ -498,6 +613,44 @@
   el.soundToggle.addEventListener("change", function () { state.sound = el.soundToggle.checked; save("sound", state.sound); if (state.sound) { unlockAudio(); chime("bell"); } });
   el.vibeToggle.addEventListener("change", function () { state.vibe = el.vibeToggle.checked; save("vibe", state.vibe); buzz(120); });
   el.autoToggle.addEventListener("change", function () { state.auto = el.autoToggle.checked; save("auto", state.auto); });
+
+  // ---------- Timer lengths ----------
+  function renderLengths() {
+    el.focusMins.value = mins.focus;
+    el.breakMins.value = mins.break;
+    el.longMins.value = mins.long;
+    var html = "";
+    PRESETS.forEach(function (p, i) {
+      var on = p.focus === mins.focus && p.break === mins.break && p.long === mins.long;
+      html += '<button class="preset' + (on ? " selected" : "") + '" data-preset="' + i + '">' +
+        "<b>" + p.name + "</b><span>" + p.focus + " / " + p.break + "</span></button>";
+    });
+    el.presets.innerHTML = html;
+  }
+
+  function applyLengths(m) {
+    setDurations(m);
+    save("durations", mins);
+    // Only an untouched timer picks up the new length right away; a started one keeps its length.
+    if (!state.endAt && state.remaining === state.total) {
+      state.total = DURATIONS[state.mode];
+      state.remaining = state.total;
+      persistTimer();
+      renderTime();
+      renderRunning();
+    }
+    renderLengths();
+  }
+
+  el.presets.addEventListener("click", function (e) {
+    var b = e.target.closest(".preset");
+    if (b) applyLengths(PRESETS[Number(b.getAttribute("data-preset"))]);
+  });
+  [el.focusMins, el.breakMins, el.longMins].forEach(function (input) {
+    input.addEventListener("change", function () {
+      applyLengths({ focus: el.focusMins.value, break: el.breakMins.value, long: el.longMins.value });
+    });
+  });
 
   // ---------- Install panel ----------
   var installPrompt = null;
@@ -541,7 +694,9 @@
   renderMode();
   renderTime();
   renderRunning();
+  renderLengths();
   starfield();
+  setInterval(checkDay, 60 * 1000);
   if (state.endAt) {
     if (currentRemaining() <= 0) complete();
     else startTicker();

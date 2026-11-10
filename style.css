@@ -116,7 +116,7 @@ body[data-mode="break"] .ring-inner .bean { animation: wobble 1.6s ease-in-out i
 .ghost-btn:active { transform: scale(0.94); }
 
 .stats {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 12px;
   background: var(--card); border: 2px solid var(--card-border); border-radius: 18px; padding: 14px 18px;
 }
 .stat { display: flex; align-items: baseline; gap: 8px; }
@@ -125,6 +125,10 @@ body[data-mode="break"] .ring-inner .bean { animation: wobble 1.6s ease-in-out i
 .dots { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; max-width: 50%; }
 .dots .mini { width: 18px; height: 18px; }
 .dots .mini svg { width: 100%; height: 100%; display: block; shape-rendering: crispEdges; }
+.progress {
+  flex-basis: 100%; margin: 0; padding-top: 10px; border-top: 2px dashed var(--card-border);
+  color: var(--accent); font-weight: 800; font-size: 14px; text-align: center;
+}
 
 .tip { text-align: center; color: var(--muted); font-weight: 800; margin: 0; min-height: 1.4em; }
 
@@ -183,6 +187,27 @@ body[data-mode="break"] .ring-inner .bean { animation: wobble 1.6s ease-in-out i
 .theme-opt.selected { border-color: var(--accent); }
 .theme-opt .mini { width: 44px; height: 44px; margin: 0 auto 2px; }
 .theme-opt svg { width: 100%; height: 100%; display: block; shape-rendering: crispEdges; }
+
+/* Settings: timer lengths */
+.settings-card { max-height: calc(100dvh - 32px); overflow-y: auto; }
+.presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
+.preset {
+  background: var(--card); border: 3px solid transparent; border-radius: 14px; padding: 8px 2px;
+  cursor: pointer; color: var(--text); font-family: "Nunito", sans-serif; font-size: 13px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.preset b { font-weight: 800; }
+.preset span { color: var(--muted); font-weight: 800; }
+.preset.selected { border-color: var(--accent); }
+.lengths { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.lengths label { display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 800; font-size: 13px; color: var(--muted); }
+.lengths input {
+  width: 100%; min-width: 0; font-size: 16px; font-family: "Nunito", sans-serif; font-weight: 800; text-align: center;
+  padding: 8px 4px; border-radius: 12px; border: 2px solid var(--card-border); background: var(--card); color: var(--text);
+}
+.lengths input:focus { outline: 2px solid var(--main); outline-offset: 1px; }
+.lengths small { font-size: 12px; }
+.modal .hint { font-size: 13px; color: var(--muted); margin: 10px 0 14px; }
 
 .toggle { display: flex; align-items: center; gap: 10px; font-weight: 800; margin: 10px 4px; text-align: left; }
 .toggle input { width: 20px; height: 20px; accent-color: var(--main); }

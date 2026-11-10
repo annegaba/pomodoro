@@ -7,11 +7,16 @@ A cute pixel space-bean pomodoro timer for study sessions. Focus for 25 minutes,
 ## What it does
 
 - **25 min focus / 5 min break**, with a progress ring and a floating pixel bean
+- **Pick your own lengths:** Classic 25/5, Quick 15/3, Deep 50/10, or type your own minutes (in 🎨)
+- **Long break 🌙** after every 4 focus sessions, with extra hype
+- **Study streak 🔥:** counts the days in a row you finish at least one focus session
 - **Hype after every focus session:** confetti, a happy chime and messages like *"SLAY QUEEN!"* and *"That test tomorrow? You're SO ready for it."*
 - **Self-care nudges:** drink water 💧, stretch, rest your eyes, grab a snack
 - **7 color themes:** purple (default), pink, cyan, lime, red, yellow, white
 - **Sound, vibration and notifications** when a timer ends (toggle them in 🎨)
-- **Keeps the screen on** while the timer runs, counts today's sessions, and works offline
+- **Keeps the screen on** while the timer runs, counts today's sessions (resets at midnight), and works offline
+
+> 💡 Leave the app open with the screen on while studying. Phones pause web apps when they're locked, so the timer stays right but the chime waits until you open it again.
 
 ## Install it 📲
 
