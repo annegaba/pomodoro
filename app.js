@@ -176,6 +176,13 @@
 
   function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
 
+  // Calls into spotify.js if it loaded (music is optional).
+  function music(fn) {
+    var m = window.BeanMusic;
+    var args = Array.prototype.slice.call(arguments, 1);
+    try { if (m && m[fn]) m[fn].apply(null, args); } catch (e) { /* ignore */ }
+  }
+
   // ---------- Elements ----------
   var $ = function (id) { return document.getElementById(id); };
   var el = {
@@ -335,11 +342,13 @@
     unlockAudio();
     askNotifyPermission();
     if (currentRemaining() <= 0) state.remaining = state.total;
+    var resumed = state.remaining < state.total;
     state.endAt = Date.now() + state.remaining * 1000;
     persistTimer();
     startTicker();
     requestWakeLock();
     renderRunning();
+    music("onStart", state.mode, resumed);
     // Phones pause web apps when locked, so remind her once to keep the app open.
     if (state.mode === "focus" && !lockHintShown) {
       lockHintShown = true;
@@ -353,6 +362,7 @@
     persistTimer();
     stopTicker();
     releaseWakeLock();
+    music("pause");
     renderRunning();
     renderTime();
   }
@@ -364,6 +374,7 @@
     persistTimer();
     stopTicker();
     releaseWakeLock();
+    music("pause");
     renderRunning();
     renderTime();
   }
@@ -376,6 +387,7 @@
     persistTimer();
     stopTicker();
     releaseWakeLock();
+    music("pause");
     renderMode();
     renderRunning();
     renderTime();
@@ -599,7 +611,7 @@
     if (!state.endAt) start();
   });
 
-  el.themeBtn.addEventListener("click", function () { el.themes.hidden = false; });
+  el.themeBtn.addEventListener("click", function () { el.themes.hidden = false; music("openSettings"); });
   el.themesClose.addEventListener("click", function () { el.themes.hidden = true; });
   el.themes.addEventListener("click", function (e) { if (e.target === el.themes) el.themes.hidden = true; });
   el.themeGrid.addEventListener("click", function (e) {

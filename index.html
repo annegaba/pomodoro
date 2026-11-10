@@ -49,6 +49,7 @@
         <button id="startBtn" class="main-btn">START</button>
         <button id="skipBtn" class="ghost-btn" aria-label="Skip">⏭</button>
       </div>
+      <p id="musicStatus" class="music-status" aria-live="polite" hidden></p>
     </section>
 
     <section class="stats">
@@ -130,6 +131,7 @@
         <label>Long break<input type="number" id="longMins" min="1" max="60" inputmode="numeric"><small>min</small></label>
       </div>
       <p class="hint">Long break after every 4 focus sessions 🌙</p>
+      <div id="musicSettings" class="music-settings" hidden></div>
       <label class="toggle"><input type="checkbox" id="soundToggle" checked> Sound</label>
       <label class="toggle"><input type="checkbox" id="vibeToggle" checked> Vibrate</label>
       <label class="toggle"><input type="checkbox" id="autoToggle"> Auto-start next timer</label>
@@ -137,6 +139,7 @@
     </div>
   </div>
 
+  <script src="spotify.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

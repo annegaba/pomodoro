@@ -209,6 +209,26 @@ body[data-mode="break"] .ring-inner .bean { animation: wobble 1.6s ease-in-out i
 .lengths small { font-size: 12px; }
 .modal .hint { font-size: 13px; color: var(--muted); margin: 10px 0 14px; }
 
+/* Spotify music */
+.music-status {
+  margin: -8px 0 0; font-size: 14px; font-weight: 800; color: var(--accent); text-align: center;
+  max-width: 100%; overflow-wrap: anywhere;
+}
+.music-status[hidden] { display: none; }
+.music-status a { color: var(--text); }
+.retry-btn {
+  font: inherit; color: var(--btn-text); background: var(--main); border: none; border-radius: 10px;
+  padding: 4px 10px; margin: 4px 2px 0; cursor: pointer; box-shadow: 0 2px 0 var(--shade);
+}
+.music-settings { margin-bottom: 6px; }
+.music-settings[hidden] { display: none; }
+.music-settings .link-btn { display: block; margin: 0 auto; font-size: 13px; }
+.pick { display: flex; flex-direction: column; gap: 4px; text-align: left; font-weight: 800; font-size: 13px; color: var(--muted); margin: 10px 0; }
+.pick select {
+  width: 100%; font-size: 16px; font-family: "Nunito", sans-serif; font-weight: 800;
+  padding: 10px; border-radius: 12px; border: 2px solid var(--card-border); background: var(--bg1); color: var(--text);
+}
+
 .toggle { display: flex; align-items: center; gap: 10px; font-weight: 800; margin: 10px 4px; text-align: left; }
 .toggle input { width: 20px; height: 20px; accent-color: var(--main); }
 

@@ -1,9 +1,10 @@
-var CACHE = "beanfocus-v4";
+var CACHE = "beanfocus-v5";
 var ASSETS = [
   "./",
   "index.html",
   "style.css",
   "app.js",
+  "spotify.js",
   "manifest.webmanifest",
   "icons/icon-192.png",
   "icons/icon-512.png",
@@ -28,9 +29,11 @@ self.addEventListener("activate", function (e) {
 // Network first (so updates show up), fall back to cache when offline.
 self.addEventListener("fetch", function (e) {
   if (e.request.method !== "GET") return;
+  // Only handle our own files. Spotify and Google Fonts go straight to the network.
+  if (new URL(e.request.url).origin !== self.location.origin) return;
   e.respondWith(
     fetch(e.request).then(function (res) {
-      if (res && res.ok && new URL(e.request.url).origin === self.location.origin) {
+      if (res && res.ok) {
         var copy = res.clone();
         caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
       }
