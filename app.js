@@ -131,7 +131,7 @@
   var el = {
     time: $("time"), label: $("label"), ringFg: $("ringFg"), bean: $("bean"),
     startBtn: $("startBtn"), resetBtn: $("resetBtn"), skipBtn: $("skipBtn"),
-    tabs: document.querySelectorAll(".tab"), todayCount: $("todayCount"), dots: $("dots"), tip: $("tip"),
+    tabs: document.querySelectorAll(".tab[data-mode]"), todayCount: $("todayCount"), dots: $("dots"), tip: $("tip"),
     celebrate: $("celebrate"), celebrateTitle: $("celebrateTitle"), celebrateMsg: $("celebrateMsg"),
     celebrateCare: $("celebrateCare"), celebrateBtn: $("celebrateBtn"), celebrateBean: $("celebrateBean"),
     confetti: $("confetti"), breakOver: $("breakOver"), breakMsg: $("breakMsg"), breakOverBtn: $("breakOverBtn"),
