@@ -1,4 +1,4 @@
-var CACHE = "beanfocus-v1";
+var CACHE = "beanfocus-v2";
 var ASSETS = [
   "./",
   "index.html",

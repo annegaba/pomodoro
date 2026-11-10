@@ -499,6 +499,43 @@
   el.vibeToggle.addEventListener("change", function () { state.vibe = el.vibeToggle.checked; save("vibe", state.vibe); buzz(120); });
   el.autoToggle.addEventListener("change", function () { state.auto = el.autoToggle.checked; save("auto", state.auto); });
 
+  // ---------- Install panel ----------
+  var installPrompt = null;
+  var installEl = $("install");
+  var installNow = $("installNow");
+  function isStandalone() {
+    return window.navigator.standalone === true ||
+      (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+  }
+  function guessOS() {
+    var ua = navigator.userAgent;
+    if (/android/i.test(ua)) return "android";
+    if (/iphone|ipad|ipod/i.test(ua) || (/macintosh/i.test(ua) && navigator.maxTouchPoints > 1)) return "ios";
+    return "pc";
+  }
+  function setOS(os) {
+    document.querySelectorAll("[data-os]").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-os") === os); });
+    document.querySelectorAll("[data-steps]").forEach(function (s) { s.hidden = s.getAttribute("data-steps") !== os; });
+  }
+  window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); installPrompt = e; });
+  window.addEventListener("appinstalled", function () { installPrompt = null; installEl.hidden = true; $("installOpen").hidden = true; });
+  $("installOpen").addEventListener("click", function () {
+    setOS(guessOS());
+    installNow.hidden = !installPrompt;
+    installEl.hidden = false;
+  });
+  $("installClose").addEventListener("click", function () { installEl.hidden = true; });
+  installEl.addEventListener("click", function (e) { if (e.target === installEl) installEl.hidden = true; });
+  document.querySelectorAll("[data-os]").forEach(function (b) {
+    b.addEventListener("click", function () { setOS(b.getAttribute("data-os")); });
+  });
+  installNow.addEventListener("click", function () {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    installPrompt.userChoice.then(function () { installPrompt = null; installNow.hidden = true; });
+  });
+  if (isStandalone()) $("installOpen").hidden = true;
+
   // ---------- Init ----------
   applyTheme(state.theme);
   renderMode();

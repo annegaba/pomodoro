@@ -57,7 +57,42 @@
     </section>
 
     <p id="tip" class="tip">You've got this, girlypop 💜</p>
+    <button id="installOpen" class="link-btn" data-open-install>📲 Save Bean Focus to your phone or PC</button>
   </main>
+
+  <!-- Install how-to -->
+  <div id="install" class="overlay" hidden>
+    <div class="modal install-card" role="dialog" aria-modal="true" aria-labelledby="installHeading">
+      <button class="close-x" id="installClose" aria-label="Close">✕</button>
+      <img class="install-icon" src="icons/icon-192.png" alt="Bean Focus app icon" width="84" height="84">
+      <h2 id="installHeading">Save me to your home screen</h2>
+      <p class="sub">One tap away whenever it's study time 💜</p>
+      <div class="tabs os-tabs" role="tablist">
+        <button class="tab" data-os="android" role="tab">Android</button>
+        <button class="tab" data-os="ios" role="tab">iPhone</button>
+        <button class="tab" data-os="pc" role="tab">PC</button>
+      </div>
+      <button class="main-btn install-now" id="installNow" hidden>📲 INSTALL NOW</button>
+      <ol class="steps" data-steps="android">
+        <li><b>Open this page in Chrome.</b> In an app's browser (Messenger, TikTok)? Tap <b>⋮</b> and pick <b>Open in Chrome</b> first.</li>
+        <li>Tap the <b>⋮</b> menu in the top-right corner.</li>
+        <li>Tap <b>Add to Home screen</b> (or <b>Install app</b>).</li>
+        <li>Tap <b>Install</b>. The purple bean is now on your home screen! 🎀</li>
+      </ol>
+      <ol class="steps" data-steps="ios" hidden>
+        <li><b>Open this page in Safari.</b> In an app's browser? Tap <b>•••</b> and pick <b>Open in browser</b> first.</li>
+        <li>Tap the <b>Share</b> button <span class="key">⬆️</span> at the bottom. On newer iPhones, tap <b>•••</b> first, then <b>Share</b>.</li>
+        <li>Scroll down and tap <b>Add to Home Screen</b> <span class="key">➕</span></li>
+        <li>Tap <b>Add</b>. That's it, girlie! 🎀</li>
+      </ol>
+      <ol class="steps" data-steps="pc" hidden>
+        <li><b>Chrome:</b> click the install icon <span class="key">🖥️⬇</span> at the right end of the address bar, or <b>⋮ → Cast, save, and share → Install page as app</b>.</li>
+        <li><b>Edge:</b> click <b>•••</b> → <b>Apps</b> → <b>Install this site as an app</b>.</li>
+        <li><b>Mac Safari:</b> click <b>File</b> → <b>Add to Dock</b>.</li>
+        <li>Click <b>Install</b>. Bean Focus opens in its own window and shows up in your Start menu or Dock! 🎀</li>
+      </ol>
+    </div>
+  </div>
 
   <!-- Celebration popup -->
   <div id="celebrate" class="overlay" hidden>
