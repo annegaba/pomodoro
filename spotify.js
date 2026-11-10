@@ -6,7 +6,7 @@
 
   // Public Client ID from the Spotify developer dashboard.
   // Leave it empty and the music section stays hidden.
-  var CLIENT_ID = "";
+  var CLIENT_ID = "681cdcacd65d4bcaa61d6b0f527d9d6d";
 
   var SCOPES = "playlist-read-private playlist-read-collaborative user-read-playback-state user-modify-playback-state";
   var API = "https://api.spotify.com/v1";
@@ -255,7 +255,7 @@
       setStatus("Open Spotify on this phone for a sec, then come back 🎧", openUrl(pick.uri),
         function () { onStart(mode, false); });
     } else if (e.status === 403) {
-      setStatus("Spotify needs Premium to play from Bean Focus 💜");
+      setStatus("Spotify needs Premium to play from I've Bean Focused 💜");
     } else {
       setStatus("Spotify hiccup, the music didn't start 😿", openUrl(pick.uri));
     }

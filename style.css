@@ -53,7 +53,7 @@ h1, h2, .time, .main-btn, .tab {
   letter-spacing: 0.5px;
 }
 
-h1 { font-size: 16px; margin: 0; color: var(--accent); text-shadow: 2px 2px 0 var(--shade); }
+h1 { font-size: clamp(12px, 4.2vw, 16px); white-space: nowrap; margin: 0; color: var(--accent); text-shadow: 2px 2px 0 var(--shade); }
 
 .icon-btn {
   font-size: 22px; background: var(--card); border: 2px solid var(--card-border);
@@ -114,6 +114,13 @@ body[data-mode="break"] .ring-inner .bean { animation: wobble 1.6s ease-in-out i
   background: var(--card); border: 2px solid var(--card-border); color: var(--text);
 }
 .ghost-btn:active { transform: scale(0.94); }
+
+/* Small phones (320-359px): keep the three buttons inside the card */
+@media (max-width: 359px) {
+  .controls { gap: 10px; }
+  .ghost-btn { width: 46px; height: 46px; }
+  .controls .main-btn { min-width: 0; padding: 16px 22px; }
+}
 
 .stats {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 12px;

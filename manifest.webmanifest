@@ -1,6 +1,6 @@
 {
-  "name": "Bean Focus Pomodoro",
-  "short_name": "Bean Focus",
+  "name": "I've Bean Focused",
+  "short_name": "I've Bean Focused",
   "description": "A cute pixel space-bean pomodoro timer: 25 minutes focus, 5 minutes break.",
   "start_url": "./",
   "scope": "./",

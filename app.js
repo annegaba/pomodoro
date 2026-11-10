@@ -276,7 +276,7 @@
     el.time.textContent = fmt(rem);
     el.ringFg.style.strokeDashoffset = String(RING_LEN * (1 - rem / state.total));
     var emoji = state.mode === "focus" ? "📚" : state.mode === "long" ? "🌙" : "☕";
-    document.title = state.endAt ? fmt(rem) + " " + emoji + " Bean Focus" : "Bean Focus";
+    document.title = state.endAt ? fmt(rem) + " " + emoji + " I've Bean Focused" : "I've Bean Focused";
   }
 
   function renderMode() {

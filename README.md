@@ -1,4 +1,4 @@
-# Bean Focus 💜
+# I've Bean Focused 💜
 
 **👉 [annegaba.github.io/pomodoro](https://annegaba.github.io/pomodoro/)**
 
@@ -20,9 +20,9 @@ A cute pixel space-bean pomodoro timer for study sessions. Focus for 25 minutes,
 
 ## Music with Spotify 🎧
 
-Bean Focus can play a focus playlist and a break playlist from your Spotify account while the timer runs. It pauses when you pause and stops for the celebration. It needs **Spotify Premium**.
+I've Bean Focused can play a focus playlist and a break playlist from your Spotify account while the timer runs. It pauses when you pause and stops for the celebration. It needs **Spotify Premium**.
 
-Connect it in **🎨 → Music**. On a phone, open the Spotify app once first so Bean Focus can find it.
+Connect it in **🎨 → Music**. On a phone, open the Spotify app once first so the app can find it.
 
 <details>
 <summary>Setup (one time, for the app owner)</summary>
@@ -59,7 +59,7 @@ Open **[annegaba.github.io/pomodoro](https://annegaba.github.io/pomodoro/)**, th
 
 It then opens in its own window and shows up in your Start menu or Dock.
 
-You can also tap **📲 Save Bean Focus to your phone or PC** at the bottom of the app for these steps (and a one-tap **Install now** button on Android and Chrome/Edge).
+You can also tap **📲 Save I've Bean Focused to your phone or PC** at the bottom of the app for these steps (and a one-tap **Install now** button on Android and Chrome/Edge).
 
 ## Made by
 
